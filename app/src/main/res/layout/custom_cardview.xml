@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="5dp">
     <RelativeLayout
+        android:id="@+id/cardview_bg"
         android:background="@drawable/cardview_bg"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"

@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 //TODO: add the attrubet and ther mutch in API  using SerializedName
 //TODO: add the constracteur and all the setter and getter
+//TODO: define the constarteur without id as pasrmats becouse it well generate automatiquem from the rest api:
+
 
 
 public class tasks {
@@ -24,8 +26,7 @@ public class tasks {
     private String updatedAt;
 
 
-    public tasks(String id, String description, String title, String category, String time, String createdAt, String updatedAt) {
-        this.id = id;
+    public tasks( String description, String title, String category, String time, String createdAt, String updatedAt) {
         this.description = description;
         this.title = title;
         this.category = category;

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,8 @@ import Model.tasks;
 
 public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder> {
 
+    private   String description;
+    private String category ;
 
 
 
@@ -60,9 +63,10 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
 
         holder.title_wig.setText(dataList.get(position).getTitle());
         holder.time_wig.setText(dataList.get(position).getTime());
+
         //TODO: send it into Dialogpop to display it :
-        String description=dataList.get(position).getDescription();
-        String category=dataList.get(position).getCategory();
+        description=dataList.get(position).getDescription();
+        category=dataList.get(position).getCategory();
 
     }
 
@@ -94,6 +98,9 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
         TextView title_wig;
         TextView time_wig;
         LottieAnimationView checked_task;
+        //TODO: change the color of cardview :
+        RelativeLayout cardview_bg;
+
 
 
         CustomViewHolder(View itemView) {
@@ -103,6 +110,15 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
             //Set the data from the API into Conpoment of the CardView
             title_wig = mView.findViewById(R.id.title_wig);
             time_wig = mView.findViewById(R.id.time_wig);
+
+            //set the Relative layout and change the color :
+            cardview_bg =mView.findViewById(R.id.cardview_bg);
+            if (category=="work"){
+                //TODO: send the color code into work color code :
+                fill_color_cardview("#5DE61A");
+
+            }
+
             checked_task=mView.findViewById(R.id.checked_task);
 
             checked_task.setOnClickListener(new View.OnClickListener() {
@@ -117,14 +133,13 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
     }
 
     //TODO add the logic of changing color background cardview:
-    /*
-    private void fill_color_cardview()
+
+    private void fill_color_cardview(String color_code )
     {
-        ImageView imgIcon = findViewById(R.id.imgIcon);
-        GradientDrawable backgroundGradient = (GradientDrawable)imgIcon.getBackground();
-        backgroundGradient.setColor(getResources().getColor(R.color.yellow));
+
+
     }
-    */
+
 
 
 

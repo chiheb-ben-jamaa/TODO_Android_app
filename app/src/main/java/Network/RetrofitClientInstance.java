@@ -7,6 +7,8 @@ public class RetrofitClientInstance {
 
 
     private static Retrofit retrofit;
+    private static  Retrofit retoffit ;
+    //TODO this is the basic api route :
     private static final String BASE_URL = "https://peaceful-lake-53040.herokuapp.com/api/";
 
     public static Retrofit getRetrofitInstance() {
@@ -18,6 +20,8 @@ public class RetrofitClientInstance {
         }
         return retrofit;
     }
+
+
 
 
 }
