@@ -26,13 +26,11 @@ public class tasks {
     private String updatedAt;
 
 
-    public tasks( String description, String title, String category, String time, String createdAt, String updatedAt) {
+    public tasks( String description, String title, String category, String time) {
         this.description = description;
         this.title = title;
         this.category = category;
         this.time = time;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public String getTitle() {

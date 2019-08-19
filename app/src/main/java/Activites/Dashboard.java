@@ -14,16 +14,19 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.todolist.R;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.util.List;
 
 import Adapter.CustomAdapter;
+import Adapter.his_recylerview_adapter;
 import Dialog.DialogTimer_Frgament;
 import Model.tasks;
 import Network.GetDataService;
@@ -37,14 +40,14 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
 
     TextView add_tasks,close_fragment,choose_time;
-    TextView personal,work,meeting,study,shopping;
-    EditText tasks_description;
+    TextView personal,work,meeting,study,shopping,add_tasks_fragment;
+    EditText tasks_description,tasks_title;
 
     RelativeLayout conatiner_add_tasks;
     Animation animte_open,animte_exite,animte_rotate;
     Boolean pressed=false;
     Boolean selected_category=false;
-    String input_time,input_description,input_category;
+    String input_time,input_description,input_category,input_title;
 
 
 
@@ -56,6 +59,8 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
     LinearLayout icon_dasboard;
     TextView field_not_task;
 
+    MDToast mdToast;
+    String res="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +74,17 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
 
-        //dec the tag list :
-        personal=(TextView)findViewById(R.id.personal);
-        work=(TextView)findViewById(R.id.work);
-        meeting=(TextView)findViewById(R.id.meeting);
-        study=(TextView)findViewById(R.id.study);
-        shopping=(TextView)findViewById(R.id.shopping);
+
 
         //dec layer:
         conatiner_add_tasks=(RelativeLayout)findViewById(R.id.conatiner_add_tasks);
         choose_time=(TextView)findViewById(R.id.choose_time);
+        add_tasks_fragment=(TextView)findViewById(R.id.add_tasks_fragment);
+
 
         //dec the inputs:
-        tasks_description=(EditText)findViewById(R.id.tasks_description);
+        tasks_description=(EditText)findViewById(R.id.title_tasks);
+        tasks_title=(EditText)findViewById(R.id.tasks_description);
 
 
 
@@ -124,6 +127,15 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
             }
         });
 
+        add_tasks_fragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PostIntoAPI();
+            }
+
+
+        });
+
         //TODO: get the data from the ViewGroup and send it into the API :
         init();
 
@@ -155,7 +167,11 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         });
 
 
-        //Close of OnCreate
+        //init the recycleurview of his catgeory list:
+         //init_his_reycleurview_adapter();
+
+
+            //Close of OnCreate
     }
 
     /*Method to generate List of data using RecyclerView with custom adapter*/
@@ -165,6 +181,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(Dashboard.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
     }
 
 
@@ -175,6 +192,54 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
 
+
+
+    private void PostIntoAPI() {
+        if ((tasks_description.getText().toString()!="") && tasks_title.getText().toString()!="" && input_category!="" && input_time!=""){
+
+
+
+            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            //To send the data and post it into the server you need to send as parmas into model class instance :
+            tasks tasks_model_class=new tasks(input_description,input_title,input_category,input_time);
+            Call<List<tasks>> call = service.createpost(tasks_model_class);
+            call.enqueue(new Callback<List<tasks>>() {
+                @Override
+                public void onResponse(Call<List<tasks>> call, Response<List<tasks>> response) {
+                    //TODO:check the reponse if sucesses:
+                    if (!response.isSuccessful() && response.body()!=null){
+                        //do some logic :
+                        mdToast = MDToast.makeText(getApplicationContext(), "New task has been created successfully.", Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
+                        mdToast.show();
+                        //TODO: make th task constaine invisible :
+                        conatiner_add_tasks.startAnimation(animte_exite);
+                        conatiner_add_tasks.setVisibility(View.INVISIBLE);
+
+
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<List<tasks>> call, Throwable t) {
+                    //desplay error message :
+                    mdToast = MDToast.makeText(getApplicationContext(), "You Have some error "+t.getMessage(), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+                    mdToast.show();
+
+
+                }
+            });
+
+
+
+        }
+        else {
+            mdToast = MDToast.makeText(getApplicationContext(), "You Have Empty Input", Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+            mdToast.show();
+        }
+
+
+    }
 
 
 
@@ -191,12 +256,57 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
     private void getdata() {
         input_description=tasks_description.getText().toString();
+        input_title=tasks_title.getText().toString();
         input_time=choose_time.getText().toString();
-        //input_category=getCategory();
+        input_category=getCategory();
+
 
     }
 
+    private String getCategory() {
 
+        RadioGroup category_radio_group = (RadioGroup) findViewById(R.id.category_radio_group);
+
+        category_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.personnel:
+                        //catergoy personnel selected:
+                        showToast("personnel");
+                        res="personnel";
+                        break;
+                    case R.id.work:
+                        //catergoy work selected:
+                        showToast("work");
+                        res="work";
+                        break;
+                    case R.id.study:
+                        //catergoy study selected:
+                        showToast("study");
+                        res="study";
+                        break;
+                    case R.id.meeting:
+                        //catergoy meeting selected:
+                        showToast("meeting");
+                        res="meeting";
+                        break;
+                    case R.id.shopping:
+                        //catergoy shopping selected:
+                        showToast("shopping");
+                        res="shopping";
+                        break;
+                }
+            }
+        });
+        return res;
+    }
+
+
+
+    private void showToast(String msg) {
+        mdToast = MDToast.makeText(getApplicationContext(), "You Select Category "+msg, Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
+        mdToast.show();
+    }
 
 
     @Override
@@ -209,120 +319,6 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
 
-    public void onClickTextview(View view) {
-
-        switch (view.getId()) {
-
-            case R.id.personal: {
 
 
-                    if (pressed) {
-
-                        personal.setBackgroundResource(R.drawable.ic_personal_select);
-                        pressed = true;
-                        selected_category = true;
-
-
-                    } else {
-                        personal.setBackgroundResource(R.drawable.ic_personal);
-                    }
-
-
-                    pressed = !pressed;
-
-                break;
-            }
-
-            case R.id.work:{
-
-
-
-                    if (pressed) {
-                        work.setBackgroundResource(R.drawable.ic_work_select);
-                        pressed = true;
-                        selected_category = true;
-
-                    } else {
-                        work.setBackgroundResource(R.drawable.ic_work);
-
-                    }
-
-                    pressed = !pressed;
-
-                    break;
-                }
-
-
-
-
-
-            case R.id.meeting:{
-
-
-                    if (pressed) {
-                        meeting.setBackgroundResource(R.drawable.ic_meeting_select);
-                        pressed = true;
-                        selected_category = true;
-
-                    } else {
-                        meeting.setBackgroundResource(R.drawable.ic_meeting);
-
-                    }
-
-
-                    pressed = !pressed;
-
-                break;
-            }
-
-
-
-
-            case R.id.study:{
-
-
-                    if (pressed) {
-                        study.setBackgroundResource(R.drawable.ic_study_select);
-                        pressed = true;
-                        selected_category = true;
-
-                    } else {
-                        study.setBackgroundResource(R.drawable.ic_study);
-
-                    }
-
-
-                    pressed = !pressed;
-
-                break;
-            }
-
-
-
-
-            case R.id.shopping:{
-
-
-                    if (pressed) {
-                        shopping.setBackgroundResource(R.drawable.ic_shopping_select);
-                        pressed = true;
-                        selected_category = true;
-
-                    } else {
-                        shopping.setBackgroundResource(R.drawable.ic_shopping);
-                        selected_category = false;
-
-                    }
-
-
-                    pressed = !pressed;
-
-                break;
-            }
-
-
-    }
-
-
-    }
 }

@@ -140,7 +140,7 @@
         android:id="@+id/conatiner_add_tasks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         tools:ignore="MissingConstraints">
@@ -205,65 +205,69 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:orientation="horizontal">
+                            <RadioGroup
+                                android:id="@+id/category_radio_group"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="28dp">
+                                <androidx.appcompat.widget.AppCompatRadioButton
+                                    android:id="@+id/personnel"
+                                    android:layout_marginRight="5dp"
+                                    android:background="@drawable/personal_selector"
+                                    android:button="@null"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
 
+                                <androidx.appcompat.widget.AppCompatRadioButton
+                                    android:id="@+id/work"
+                                    android:background="@drawable/work_selector"
+                                    android:button="@null"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
 
-                            <TextView
-                                android:onClick="onClickTextview"
-                                android:enabled="false"
-                                android:id="@+id/personal"
+                                <androidx.appcompat.widget.AppCompatRadioButton
+                                    android:id="@+id/study"
+                                    android:background="@drawable/study_selector"
+                                    android:button="@null"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <androidx.appcompat.widget.AppCompatRadioButton
+                                    android:id="@+id/meeting"
+                                    android:background="@drawable/meeting_selector"
+                                    android:button="@null"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+
+                                <androidx.appcompat.widget.AppCompatRadioButton
+                                    android:id="@+id/shopping"
+                                    android:background="@drawable/shopping_selector"
+                                    android:button="@null"
+                                    android:layout_marginRight="5dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </RadioGroup>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerview_category"
+                                android:visibility="gone"
+                                android:paddingStart="5dp"
+                                android:paddingEnd="5dp"
+                                android:orientation="horizontal"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="20dp"
-                                android:gravity="center_vertical"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/ic_personal" />
+                                android:layout_height="28dp">
 
-                            <TextView
-                                android:onClick="onClickTextview"
-                                android:enabled="false"
-                                android:id="@+id/work"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
-                                android:gravity="center_vertical"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/ic_work" />
-
-                            <TextView
-                                android:onClick="onClickTextview"
-                                android:enabled="false"
-                                android:id="@+id/meeting"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
-                                android:gravity="center_vertical"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/ic_meeting" />
-
-
-                            <TextView
-                                android:onClick="onClickTextview"
-                                android:enabled="false"
-                                android:id="@+id/study"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
-                                android:gravity="center_vertical"
-                                android:layout_gravity="center_vertical"
-                                android:background="@drawable/ic_study"/>
-
-                            <TextView
-                                android:id="@+id/shopping"
-                                android:enabled="false"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:onClick="onClickTextview"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginLeft="15dp"
-                                android:layout_marginRight="20dp"
-                                android:background="@drawable/ic_shopping"/>
-
+                            </androidx.recyclerview.widget.RecyclerView>
                         </LinearLayout>
 
 
@@ -300,14 +304,28 @@
 
 
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/description_layer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/choose_time_layer">
+                <EditText
+                    android:id="@+id/title_tasks"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:hint="@string/hint_description"
+                    android:layout_marginRight="15dp"
+                    android:paddingLeft="15dp"/>
+            </LinearLayout>
             <TextView
                 android:id="@+id/add_tasks_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/choose_time_layer"
+                android:layout_below="@+id/description_layer"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="30dp"
                 android:background="@drawable/ic_add_tasks_fragment" />
         </RelativeLayout>
 

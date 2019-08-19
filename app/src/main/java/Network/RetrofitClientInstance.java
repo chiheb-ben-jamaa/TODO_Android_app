@@ -1,13 +1,18 @@
 package Network;
 
+import Model.tasks;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClientInstance {
 
 
+
     private static Retrofit retrofit;
-    private static  Retrofit retoffit ;
+
+    private static RetrofitClientInstance retrofitClientInstance;
     //TODO this is the basic api route :
     private static final String BASE_URL = "https://peaceful-lake-53040.herokuapp.com/api/";
 
@@ -20,6 +25,15 @@ public class RetrofitClientInstance {
         }
         return retrofit;
     }
+
+
+    public static RetrofitClientInstance getInstance() {
+        if (retrofitClientInstance == null) {
+            retrofitClientInstance = new RetrofitClientInstance();
+        }
+        return retrofitClientInstance;
+    }
+
 
 
 
