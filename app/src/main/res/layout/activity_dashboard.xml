@@ -49,20 +49,12 @@
     </Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="20dp"
         android:id="@+id/customRecyclerView"
-        android:layout_width="402dp"
-        android:layout_height="519dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:padding="5dp"
-        app:layout_constraintBottom_toTopOf="@+id/relativeLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_dasboard">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -171,6 +163,7 @@
                 android:id="@+id/tasks_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_below="@+id/title"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="20dp"
@@ -205,6 +198,12 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:orientation="horizontal">
+                            <TextView
+                                android:text=""
+                                android:visibility="gone"
+                                android:id="@+id/category_flag_val"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent" />
                             <RadioGroup
                                 android:id="@+id/category_radio_group"
                                 android:layout_gravity="center"
@@ -278,32 +277,45 @@
 
             </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/choose_time_layer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tasks_category"
                 android:layout_marginTop="30dp">
-
-                <TextView
+                <RelativeLayout
+                    android:layout_centerInParent="true"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/ic_alarm_clock" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/choose_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:text="@string/Choose_time"
-                    android:textColor="#404040"
-                    android:textSize="22sp" />
+                    <LinearLayout
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="left"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/ic_alarm_clock" />
+
+                        <TextView
+                            android:id="@+id/choose_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="@string/Choose_time"
+                            android:textColor="#404040"
+                            android:textSize="22sp" />
+                    </LinearLayout>
+                </RelativeLayout>
 
 
-            </LinearLayout>
+
+
+            </RelativeLayout>
             <LinearLayout
                 android:layout_marginTop="10dp"
                 android:id="@+id/description_layer"
@@ -312,6 +324,7 @@
                 android:layout_below="@+id/choose_time_layer">
                 <EditText
                     android:id="@+id/title_tasks"
+                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"

@@ -28,6 +28,10 @@ dependencies {
     implementation "com.airbnb.android:lottie:2.6.0"
     //add the custom Toast wigth :
     implementation  'com.valdesekamdem.library:md-toast:0.9.0'
+    //add the  strikeThroughPainting TextView Animation:
+    implementation 'com.github.zijing07:ExTextView:v0.1.0'
+    //add the custom alert dialog :
+    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 
     //retrofit & GSON recuycleur view & card view :
     implementation 'com.android.support:appcompat-v7:28.0.0'

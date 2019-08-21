@@ -2,53 +2,73 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_marginBottom="10dp"
+    android:layout_marginRight="15dp"
+    android:layout_marginLeft="15dp"
     app:cardCornerRadius="5dp">
     <RelativeLayout
         android:id="@+id/cardview_bg"
         android:background="@drawable/cardview_bg"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="55dp">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/fill_card_view"
+            android:background="@drawable/color_category"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
 <LinearLayout
     android:layout_centerVertical="true"
-    android:layout_width="match_parent"
+    android:layout_alignParentLeft="true"
+    android:layout_marginLeft="20dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <com.airbnb.lottie.LottieAnimationView
+        android:layout_gravity="center_vertical"
+
         android:id="@+id/checked_task"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="25dp"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:background="@drawable/ic_not_checked"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:lottie_autoPlay="false"
-        app:lottie_fileName="check_task.json"
+        app:lottie_fileName="check.json"
         app:lottie_loop="false" />
 
-    <TextView
+    <lib.mozidev.me.extextview.ExTextView
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="14dp"
         android:id="@+id/time_wig"
-        android:layout_marginLeft="20dp"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:textColor="#C6C6C8"
         android:text="@string/time"
         android:fontFamily="@font/rubik_regular"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
+        android:layout_gravity="center_vertical"
+        android:visibility="gone"
         android:id="@+id/title_wig"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="10dp"
         android:fontFamily="@font/rubik_regular"
         android:text="@string/title"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textColor="#554E8F"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 </LinearLayout>
+        </RelativeLayout>
+
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

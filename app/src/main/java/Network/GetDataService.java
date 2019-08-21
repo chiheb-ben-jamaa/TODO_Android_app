@@ -14,6 +14,6 @@ public interface GetDataService {
     Call<List<tasks>> getalltasks();
 
     @POST("tasks")
-    Call<List<tasks>> createpost(@Body tasks tasks);
+    Call<tasks> createpost(@Body tasks tasks);
 
 }

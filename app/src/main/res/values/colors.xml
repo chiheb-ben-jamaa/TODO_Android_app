@@ -3,4 +3,6 @@
     <color name="colorPrimary">#81C7F5</color>
     <color name="colorPrimaryDark">#81C7F5</color>
     <color name="colorAccent">#81C7F5</color>
+    <color name="linecolortext">#D9D9D9</color>
+    <color name="alert_color">#6894EE</color>
 </resources>

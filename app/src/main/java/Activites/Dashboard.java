@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,7 +26,6 @@ import com.valdesekamdem.library.mdtoast.MDToast;
 import java.util.List;
 
 import Adapter.CustomAdapter;
-import Adapter.his_recylerview_adapter;
 import Dialog.DialogTimer_Frgament;
 import Model.tasks;
 import Network.GetDataService;
@@ -35,12 +34,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
+    final static String TAG="Dashboard";
 
     TextView add_tasks,close_fragment,choose_time;
-    TextView personal,work,meeting,study,shopping,add_tasks_fragment;
+    TextView category_flag_val,add_tasks_fragment;
     EditText tasks_description,tasks_title;
 
     RelativeLayout conatiner_add_tasks;
@@ -60,7 +58,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
     TextView field_not_task;
 
     MDToast mdToast;
-    String res="";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +91,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         field_not_task=findViewById(R.id.field_not_task);
 
         //dec:
+        category_flag_val=(TextView)findViewById(R.id.category_flag_val);
         add_tasks=(TextView)findViewById(R.id.add_tasks);
         add_tasks.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,37 +140,10 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
 
-        progressDoalog = new ProgressDialog(Dashboard.this);
-        progressDoalog.setMessage("Loading....");
-        progressDoalog.show();
-
-        /*Create handle for the RetrofitInstance interface*/
-        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<List<tasks>> call = service.getalltasks();
-        call.enqueue(new Callback<List<tasks>>() {
-            @Override
-            public void onResponse(Call<List<tasks>> call, Response<List<tasks>> response) {
-                progressDoalog.dismiss();
-                icon_dasboard.setVisibility(View.GONE);
-                 field_not_task.setVisibility(View.GONE);
-                generateDataList(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<tasks>> call, Throwable t) {
-                progressDoalog.dismiss();
-                icon_dasboard.setVisibility(View.VISIBLE);
-                field_not_task.setVisibility(View.VISIBLE);
-                Toast.makeText(Dashboard.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
-            }
-        });
 
 
-        //init the recycleurview of his catgeory list:
-         //init_his_reycleurview_adapter();
 
 
-            //Close of OnCreate
     }
 
     /*Method to generate List of data using RecyclerView with custom adapter*/
@@ -195,13 +167,49 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
     private void PostIntoAPI() {
-        if ((tasks_description.getText().toString()!="") && tasks_title.getText().toString()!="" && input_category!="" && input_time!=""){
+        if ((tasks_description.getText().toString().equals("")) ||(tasks_title.getText().toString().equals("")) || (category_flag_val.getText().toString().equals("")) || (choose_time.getText().toString().equals(""))){
+            mdToast = MDToast.makeText(getApplicationContext(), "You Have Empty Input", Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+            mdToast.show();
+            Log.d(TAG, "PostIntoAPI: ");
+            Log.d(TAG, ":tasks_description "+tasks_description.getText().toString());
+            Log.d(TAG, ":tasks_title "+tasks_title.getText().toString());
+            Log.d(TAG, ":tasks_category "+category_flag_val.getText().toString());
+            Log.d(TAG, ":choose_time "+choose_time.getText().toString());
+        }
+        else if (!(tasks_description.getText().toString().equals("")) &&(!tasks_title.getText().toString().equals("")) && (!category_flag_val.getText().toString().equals("")) && (!choose_time.getText().toString().equals(""))){
 
-
-
-            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
             //To send the data and post it into the server you need to send as parmas into model class instance :
-            tasks tasks_model_class=new tasks(input_description,input_title,input_category,input_time);
+            tasks tasks_model_class=new tasks(tasks_description.getText().toString(),tasks_title.getText().toString(),category_flag_val.getText().toString(),choose_time.getText().toString());
+            GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+            Call<tasks> call=service.createpost(tasks_model_class);
+            call.enqueue(new Callback<tasks>() {
+                @Override
+                public void onResponse(Call<tasks> call, Response<tasks> response) {
+
+                    if (!response.isSuccessful() || response.body()!=null) {
+                        //do some logic :
+                        mdToast = MDToast.makeText(getApplicationContext(), "New task has been created successfully.", Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
+                        mdToast.show();
+                        //TODO: add custom animation :
+                        conatiner_add_tasks.startAnimation(animte_exite);
+                        conatiner_add_tasks.setVisibility(View.INVISIBLE);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<tasks> call, Throwable t) {
+
+                    //desplay error message :
+                    mdToast = MDToast.makeText(getApplicationContext(), "You Have some error "+t.getMessage(), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+                    mdToast.show();
+                    Log.d(TAG, "onFailure: "+t.getMessage());
+
+                }
+            });
+
+
+
+            /*
             Call<List<tasks>> call = service.createpost(tasks_model_class);
             call.enqueue(new Callback<List<tasks>>() {
                 @Override
@@ -225,18 +233,18 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
                     //desplay error message :
                     mdToast = MDToast.makeText(getApplicationContext(), "You Have some error "+t.getMessage(), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
                     mdToast.show();
+                    Log.d(TAG, "onFailure: "+t.getMessage());
 
 
                 }
             });
 
+            */
+
 
 
         }
-        else {
-            mdToast = MDToast.makeText(getApplicationContext(), "You Have Empty Input", Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
-            mdToast.show();
-        }
+
 
 
     }
@@ -251,6 +259,36 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
     private void init() {
         getdata();
+        load_data();
+
+    }
+
+    private void load_data() {
+
+        progressDoalog = new ProgressDialog(Dashboard.this);
+        progressDoalog.setMessage("Loading....");
+        progressDoalog.show();
+
+        /*Create handle for the RetrofitInstance interface*/
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<List<tasks>> call = service.getalltasks();
+        call.enqueue(new Callback<List<tasks>>() {
+            @Override
+            public void onResponse(Call<List<tasks>> call, Response<List<tasks>> response) {
+                progressDoalog.dismiss();
+                icon_dasboard.setVisibility(View.GONE);
+                field_not_task.setVisibility(View.GONE);
+                generateDataList(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<tasks>> call, Throwable t) {
+                progressDoalog.dismiss();
+                icon_dasboard.setVisibility(View.VISIBLE);
+                field_not_task.setVisibility(View.VISIBLE);
+                Toast.makeText(Dashboard.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
@@ -258,49 +296,57 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         input_description=tasks_description.getText().toString();
         input_title=tasks_title.getText().toString();
         input_time=choose_time.getText().toString();
-        input_category=getCategory();
+        Category_List();
 
 
     }
 
-    private String getCategory() {
 
+
+    private void Category_List() {
         RadioGroup category_radio_group = (RadioGroup) findViewById(R.id.category_radio_group);
 
         category_radio_group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                String s="";
                 switch (checkedId) {
                     case R.id.personnel:
                         //catergoy personnel selected:
                         showToast("personnel");
-                        res="personnel";
+                        getCategory("personnel");
                         break;
                     case R.id.work:
                         //catergoy work selected:
                         showToast("work");
-                        res="work";
+                        getCategory("work");
                         break;
                     case R.id.study:
                         //catergoy study selected:
                         showToast("study");
-                        res="study";
+                        getCategory("study");
                         break;
                     case R.id.meeting:
                         //catergoy meeting selected:
                         showToast("meeting");
-                        res="meeting";
+                        getCategory("meeting");
                         break;
                     case R.id.shopping:
                         //catergoy shopping selected:
                         showToast("shopping");
-                        res="shopping";
+                        getCategory("shopping");
                         break;
+
                 }
+
             }
+
         });
-        return res;
+
     }
 
+    public void getCategory(String ms){
+    category_flag_val.setText(ms);
+}
 
 
     private void showToast(String msg) {
@@ -311,7 +357,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        choose_time.setText("Today : Hour "+ i +":" + i1);
+        choose_time.setText(""+ i +":" + i1);
 
     }
 
