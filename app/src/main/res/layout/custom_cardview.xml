@@ -36,7 +36,6 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_gravity="center_vertical"
-
         android:id="@+id/checked_task"
         android:background="@drawable/ic_not_checked"
         android:layout_width="30dp"

@@ -87,6 +87,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
         //TODO: get visiblete gone :
+
         icon_dasboard=findViewById(R.id.icon_dasboard);
         field_not_task=findViewById(R.id.field_not_task);
 
@@ -181,7 +182,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
             //To send the data and post it into the server you need to send as parmas into model class instance :
             tasks tasks_model_class=new tasks(tasks_description.getText().toString(),tasks_title.getText().toString(),category_flag_val.getText().toString(),choose_time.getText().toString());
             GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-            Call<tasks> call=service.createpost(tasks_model_class);
+            Call<tasks> call=service.createtask(tasks_model_class);
             call.enqueue(new Callback<tasks>() {
                 @Override
                 public void onResponse(Call<tasks> call, Response<tasks> response) {
@@ -209,37 +210,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
 
-            /*
-            Call<List<tasks>> call = service.createpost(tasks_model_class);
-            call.enqueue(new Callback<List<tasks>>() {
-                @Override
-                public void onResponse(Call<List<tasks>> call, Response<List<tasks>> response) {
-                    //TODO:check the reponse if sucesses:
-                    if (!response.isSuccessful() && response.body()!=null){
-                        //do some logic :
-                        mdToast = MDToast.makeText(getApplicationContext(), "New task has been created successfully.", Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
-                        mdToast.show();
-                        //TODO: make th task constaine invisible :
-                        conatiner_add_tasks.startAnimation(animte_exite);
-                        conatiner_add_tasks.setVisibility(View.INVISIBLE);
 
-
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<List<tasks>> call, Throwable t) {
-                    //desplay error message :
-                    mdToast = MDToast.makeText(getApplicationContext(), "You Have some error "+t.getMessage(), Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
-                    mdToast.show();
-                    Log.d(TAG, "onFailure: "+t.getMessage());
-
-
-                }
-            });
-
-            */
 
 
 
@@ -260,6 +231,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
     private void init() {
         getdata();
         load_data();
+        //Toast.makeText(getApplicationContext(),"item number is "+adapter.getItemCount(),Toast.LENGTH_SHORT).show();
 
     }
 
