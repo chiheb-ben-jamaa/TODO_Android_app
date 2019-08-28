@@ -47,6 +47,16 @@
 
         </RelativeLayout>
     </Toolbar>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_dasboard"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:layout_height="wrap_content"
+        android:id="@+id/swipeRefreshLayout">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="20dp"
@@ -56,8 +66,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_dasboard">
-
     </androidx.recyclerview.widget.RecyclerView>
+
+
+</ScrollView>
+
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <RelativeLayout
 
         android:id="@+id/relativeLayout"
@@ -95,23 +111,12 @@
             android:background="@drawable/ic_no_tasks" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/bottom_nv_bar"
-        android:layout_width="0dp"
-        android:layout_height="76dp"
-        android:background="@drawable/ic_nv_bar_bg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints">
 
-
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
-        android:layout_width="0dp"
-        android:layout_height="90dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -132,7 +137,7 @@
         android:id="@+id/conatiner_add_tasks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/relativeLayout"
         tools:ignore="MissingConstraints">

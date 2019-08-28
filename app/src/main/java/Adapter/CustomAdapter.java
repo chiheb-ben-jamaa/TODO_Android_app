@@ -1,7 +1,9 @@
 package Adapter;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,7 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
     private   String description;
     private String category;
     private String id ;
-    private int pos;
+    private int pos,p;
     private Boolean ret;
     private boolean startAnimation;
 
@@ -89,7 +91,9 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
         description=dataList.get(getItemCount()-position-1).getDescription();
         category=dataList.get(getItemCount()-position-1).getCategory();
         ///id=dataList.get(getItemCount()-position-getItemCount()).getId();
-        pos = getItemCount()-position-1;
+        holder.checked_task.setTag(getItemCount()-position-1);
+        //p=position;
+
         fill_color_cardview(category,holder.fill_card_view);
 
     }
@@ -102,6 +106,21 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
         //TODO: update the getItemCount
         return dataList.size();
     }
+
+
+
+
+
+    public void clear(){
+        dataList.clear();
+    }
+
+    public void addAll(List<tasks> List_data){
+        dataList.addAll(List_data);
+        notifyDataSetChanged();
+
+    }
+
 
 
     @Override
@@ -126,10 +145,13 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
 
 
 
-        CustomViewHolder(View itemView) {
+
+        CustomViewHolder(final View itemView) {
             super(itemView);
             mView = itemView;
 
+            //Set the ViewGroup :
+            cardview_bg=mView.findViewById(R.id.cardview_bg);
             //Set the data from the API into Conpoment of the CardView
             title_wig = mView.findViewById(R.id.title_wig);
             time_wig = mView.findViewById(R.id.time_wig);
@@ -138,28 +160,80 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
             cardview_bg =mView.findViewById(R.id.cardview_bg);
             fill_card_view=mView.findViewById(R.id.fill_card_view);
 
-
+            //TODO: Animation check_mark implmentation:
+            //declare the wigth:
             checked_task=mView.findViewById(R.id.checked_task);
+            //set the defoult background to show the lottie animation:
             checked_task.setBackgroundResource(R.drawable.ic_not_checked);
-            checked_task.setOnClickListener(new View.OnClickListener() {
+            check_lottie_animation(checked_task,time_wig);
+
+
+        }
+
+
+        private void check_lottie_animation(final View v, final ExTextView v_time){
+
+
+
+            //set onclick lisntener:
+            v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    //start the animation &set the background to null to show the animation::
                     checked_task.playAnimation();
                     checked_task.setBackground(null);
-                  //if (ret==true){
+                    //start the strikethroug textview animation:
+                    strikeThroughTextView(v_time,true);
+                    //add the lottie linstener to trigger the sate of the animation (onStart,onEnd,onCancel):
+                    checked_task.addAnimatorListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
 
-                      Log.d("MaterialStyledDialogs", "Delete task !");
-                      MDToast  mdToast = MDToast.makeText(context, "Task Deleted successfully", Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
-                      mdToast.show();
-                      strikeThroughTextView(time_wig,true);
-                      Delete_task();
+                            // TODO: Start The Animation of strikeThroughTextView:
+                            Log.d("MaterialStyledDialogs", "Delete task !");
+                            MDToast  mdToast = MDToast.makeText(context, "Task Deleted successfully", Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
+                            mdToast.show();
 
 
-                  //}else {
-                      //Log.d("MaterialStyledDialogs", "Cancal Delete task !");
-                        //checked_task.cancelAnimation();
-                        //checked_task.setBackgroundResource(R.drawable.ic_not_checked);
-                  //}
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            //TODO Delete The Task :
+                            int itemPosition = (int) v.getTag();
+                            Toast.makeText(context,"position on delete !"+itemPosition,Toast.LENGTH_SHORT).show();
+                            Delete_task(itemPosition);
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animator) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animator) {
+
+                        }
+                    });
+
+
+
+
+
+
+
+
+
+
+
+                    //}else {
+                    //Log.d("MaterialStyledDialogs", "Cancal Delete task !");
+                    //checked_task.cancelAnimation();
+                    //checked_task.setBackgroundResource(R.drawable.ic_not_checked);
+                    //}
 
 
                 }
@@ -168,14 +242,10 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
 
 
 
-
-
         }
 
 
-        private void Cancal_delete() {
 
-        }
 
 
     }
@@ -292,22 +362,22 @@ public class CustomAdapter  extends RecyclerView.Adapter<CustomAdapter.CustomVie
 
 
 
-    private void Delete_task(){
-       id= dataList.get(pos).getId();
+    private void Delete_task(final int curent_position){
+       this.id = dataList.get(pos).getId();
         //Log.d(TAG, "Delete_task: Task ID "+id);
         //MDToast  mdToast = MDToast.makeText(context, "Task ID :"+id, Toast.LENGTH_SHORT, MDToast.TYPE_ERROR);
         //mdToast.show();
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
-        Call<Void> call=service.deletetask(id);
+        Call<Void> call=service.deletetask(this.id);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 Log.d(TAG, "onResponse: The Task has been deleted !");
                 //TODO: update the recycler view
                 //TODO: delete the item from ther postion :
-                 dataList.remove(pos);
+                 dataList.remove(curent_position);
                 //TODO: notify the recycleur view for any chaning :
-                 notifyItemRemoved(pos);
+                 notifyItemRemoved(curent_position);
 
             }
 

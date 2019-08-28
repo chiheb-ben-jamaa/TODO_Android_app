@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.android.todolist.R;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Adapter.CustomAdapter;
@@ -35,22 +38,23 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
-    final static String TAG="Dashboard";
 
+    final static String TAG="Dashboard";
+    final  static  int referche_time=3000;
     TextView add_tasks,close_fragment,choose_time;
     TextView category_flag_val,add_tasks_fragment;
     EditText tasks_description,tasks_title;
 
     RelativeLayout conatiner_add_tasks;
-    Animation animte_open,animte_exite,animte_rotate;
-    Boolean pressed=false;
-    Boolean selected_category=false;
-    String input_time,input_description,input_category,input_title;
+    Animation animte_open,animte_exite;
 
+    String input_time,input_description,input_category,input_title;
+    private List<tasks> data_load_backup;
 
 
     private CustomAdapter adapter;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
     ProgressDialog progressDoalog;
 
 
@@ -58,6 +62,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
     TextView field_not_task;
 
     MDToast mdToast;
+
 
 
     @Override
@@ -68,10 +73,10 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         //dec animation :
         animte_open= AnimationUtils.loadAnimation(this,R.anim.open_animation);
         animte_exite= AnimationUtils.loadAnimation(this,R.anim.exite_animation);
-        //animte_rotate= AnimationUtils.loadAnimation(this,R.anim.rotate_clock);
 
 
-
+        //recycleurview refercher:
+        swipeRefreshLayout=(SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
 
 
         //dec layer:
@@ -87,7 +92,6 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
         //TODO: get visiblete gone :
-
         icon_dasboard=findViewById(R.id.icon_dasboard);
         field_not_task=findViewById(R.id.field_not_task);
 
@@ -138,7 +142,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
         //TODO: get the data from the ViewGroup and send it into the API :
         init();
-
+        refercher();
 
 
 
@@ -153,19 +157,13 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
         adapter = new CustomAdapter(this,tasksList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(Dashboard.this);
         recyclerView.setLayoutManager(layoutManager);
+        //to fix the scrolling issue :
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setHasFixedSize(false);
+        //set the adapter into the recycleurview :
         recyclerView.setAdapter(adapter);
 
     }
-
-
-
-
-
-
-
-
-
-
 
     private void PostIntoAPI() {
         if ((tasks_description.getText().toString().equals("")) ||(tasks_title.getText().toString().equals("")) || (category_flag_val.getText().toString().equals("")) || (choose_time.getText().toString().equals(""))){
@@ -220,18 +218,9 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
     }
 
-
-
-
-
-
-
-
-
     private void init() {
         getdata();
         load_data();
-        //Toast.makeText(getApplicationContext(),"item number is "+adapter.getItemCount(),Toast.LENGTH_SHORT).show();
 
     }
 
@@ -250,6 +239,7 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
                 progressDoalog.dismiss();
                 icon_dasboard.setVisibility(View.GONE);
                 field_not_task.setVisibility(View.GONE);
+                data_load_backup= response.body();
                 generateDataList(response.body());
             }
 
@@ -272,8 +262,6 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
 
     }
-
-
 
     private void Category_List() {
         RadioGroup category_radio_group = (RadioGroup) findViewById(R.id.category_radio_group);
@@ -320,12 +308,10 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
     category_flag_val.setText(ms);
 }
 
-
     private void showToast(String msg) {
         mdToast = MDToast.makeText(getApplicationContext(), "You Select Category "+msg, Toast.LENGTH_SHORT, MDToast.TYPE_SUCCESS);
         mdToast.show();
     }
-
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
@@ -333,9 +319,61 @@ public class Dashboard extends AppCompatActivity implements TimePickerDialog.OnT
 
     }
 
+    private void refercher() {
+
+        //adding the OnRefreche Lisntener into the swipeRefreshLayout:
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //add timer into the OnRefreche :
+                new Handler().postDelayed(new Runnable() {
+                    @Override public void run() {
+                        // Stop animation (This will be after 3 seconds)
+                        //load_data();
+                        Toast.makeText(getApplicationContext(),"Rerfeching the Page !",Toast.LENGTH_SHORT).show();
+                        // Create New GET HTTP request From The API :
+                        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+                        Call<List<tasks>> call=service.getalltasks();
+                        call.enqueue(new Callback<List<tasks>>() {
+                            @Override
+                            public void onResponse(Call<List<tasks>> call, Response<List<tasks>> response) {
+                                //stop animation SwipeRefreche :
+                                if (swipeRefreshLayout.isRefreshing()){
+                                    swipeRefreshLayout.setRefreshing(false);
+
+                                    //adapter.clear() clear all data in the adpater :
+                                    adapter.clear();
+                                    data_load_backup=response.body();
+                                    //create new adapter and get all data from GET request HTTP :
+                                    adapter = new CustomAdapter(getApplicationContext(),data_load_backup);
+                                    //set Adapter:
+                                    recyclerView.setAdapter(adapter);
+                                    //notify for any changing in the adapter:
+                                    //adapter.notifyDataSetChanged();
+
+
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<tasks>> call, Throwable t) {
+                                Toast.makeText(Dashboard.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                        });
 
 
 
+                    }
+                }, 1000);
+
+
+            }
+        });
+
+    }
 
 
 
